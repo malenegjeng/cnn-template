@@ -1,0 +1,100 @@
+{
+    "dataset_params": {
+        "class_name": "H5Reader",
+        "config": {
+            "filename": "/home/work/maleneg/hn_delin/full_dataset_singleclass.h5",
+            "batch_size": 16,
+            "x_name": "input",
+            "y_name": "target",
+            "batch_cache": 10,
+            "shuffle": true,
+            "fold_prefix": "",
+            "train_folds": [
+                "train"
+            ],
+            "val_folds": [
+                "val"
+            ],
+            "test_folds": [
+                "test"
+            ],
+            "preprocessors": [
+                {
+                    "class_name": "HounsfieldWindowingPreprocessor",
+                    "config": {
+                        "window_center": 70,
+                        "window_width": 200,
+                        "channel": 0
+                    }
+                },
+                {
+                    "class_name": "ImageNormalizerPreprocessor",
+                    "config": {
+                        "vmin": [
+                            -200,
+                            0
+                        ],
+                        "vmax": [
+                            200,
+                            25
+                        ]
+                    }
+                }
+            ],
+            "augmentations": {
+                "class_name": "ImageAugmentation2D",
+                "config": {
+                    "rotation_range": 90,
+                    "zoom_range": [
+                        0.5,
+                        1.5
+                    ],
+                    "shift_range": [
+                        10,
+                        10
+                    ],
+                    "flip_axis": 0
+                }
+            }
+        }
+    },
+    "train_params": {
+        "epochs": 5,
+        "callbacks": [
+            {
+                "class_name": "EarlyStopping",
+                "config": {
+                    "monitor": "val_loss",
+                    "patience": 30
+                }
+            }
+        ]
+    },
+    "input_params": {
+        "shape": [
+            191,
+            265,
+            2
+        ]
+    },
+    "model_params": {
+        "loss": {
+            "class_name": "BinaryFbetaLoss"
+        },
+        "optimizer": {
+            "class_name": "adam",
+            "config": {
+                "learning_rate": 0.0001
+            }
+        },
+        "metrics": [
+            {
+                "class_name": "BinaryFbeta"
+            },
+            {
+                "class_name": "Dice"
+            }
+        ]
+    },
+    "architecture": {"type": "DenseNet", "layers": [{"name": "down_conv1", "class_name": "Conv2D", "config": {"filters": 64, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 1}}, {"dense_block": 3, "name": "dense_block1", "class_name": "Conv2D", "config": {"filters": 64, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}}, {"name": "down_conv2", "class_name": "Conv2D", "config": {"filters": 80, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}, "inputs": ["down_conv1", "dense_block1"]}, {"dense_block": 4, "name": "dense_block2", "class_name": "Conv2D", "config": {"filters": 80, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}}, {"name": "down_conv3", "class_name": "Conv2D", "config": {"filters": 96, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}, "inputs": ["down_conv2", "dense_block2"]}, {"dense_block": 5, "name": "dense_block3", "class_name": "Conv2D", "config": {"filters": 96, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}}, {"name": "down_conv4", "class_name": "Conv2D", "config": {"filters": 112, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}, "inputs": ["down_conv3", "dense_block3"]}, {"dense_block": 6, "name": "dense_block4", "class_name": "Conv2D", "config": {"filters": 112, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}}, {"name": "down_conv5", "class_name": "Conv2D", "config": {"filters": 128, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}, "inputs": ["down_conv4", "dense_block4"]}, {"dense_block": 7, "name": "dense_block5", "class_name": "Conv2D", "config": {"filters": 128, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}}, {"name": "up_conv4", "class_name": "Conv2DTranspose", "config": {"filters": 112, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}}, {"dense_block": 6, "class_name": "Conv2D", "config": {"filters": 112, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}, "inputs": ["down_conv4", "dense_block4", "up_conv4"]}, {"name": "up_conv3", "class_name": "Conv2DTranspose", "config": {"filters": 96, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}}, {"dense_block": 5, "class_name": "Conv2D", "config": {"filters": 96, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}, "inputs": ["down_conv3", "dense_block3", "up_conv3"]}, {"name": "up_conv2", "class_name": "Conv2DTranspose", "config": {"filters": 80, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}}, {"dense_block": 4, "class_name": "Conv2D", "config": {"filters": 80, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}, "inputs": ["down_conv2", "dense_block2", "up_conv2"]}, {"name": "up_conv1", "class_name": "Conv2DTranspose", "config": {"filters": 64, "kernel_size": 1, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same", "strides": 2}}, {"dense_block": 3, "class_name": "Conv2D", "config": {"filters": 64, "kernel_size": 3, "activation": "relu", "kernel_initializer": "he_normal", "padding": "same"}, "inputs": ["down_conv1", "dense_block1", "up_conv1"]}, {"class_name": "Conv2D", "config": {"filters": 1, "kernel_size": 3, "activation": "sigmoid", "kernel_initializer": "he_normal", "padding": "same"}}]}
+}
