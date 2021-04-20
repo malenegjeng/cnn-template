@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Apr 20 08:06:36 2021
+
+@author: Bruker
+"""
+{
+    "config": {
+        "filename": "/home/work/maleneg/hn_delin/maastro_test_data_2d_cut.h5",
+        "test_folds": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+        ],
+        "fold_prefix": "fold"
+    }
+}
